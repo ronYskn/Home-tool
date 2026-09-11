@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="הבית שלי">
+<title>הבית שלי — קניות ומשימות</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<style>
+:root{
+  --bg:#0f1115; --card:#171a21; --card2:#1e222b; --line:#2a2f3a;
+  --txt:#e8eaed; --dim:#9aa3b2; --acc:#4c8dff; --ok:#34d399; --warn:#fbbf24; --hot:#f87171;
+  --r:14px;
+}
+[data-theme="light"]{
+  --bg:#f4f6fa; --card:#ffffff; --card2:#eef1f7; --line:#dde2ec;
+  --txt:#111827; --dim:#5b6472; --acc:#2563eb;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:"Segoe UI",Rubik,Arial,sans-serif;padding-bottom:96px}
+header{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 12px 6px;border-bottom:1px solid var(--line)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:17px;margin:0;flex:1}
+button,select,input,textarea{font-family:inherit;font-size:15px}
+.btn{background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+.btn.acc{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.sm{padding:5px 9px;font-size:13px;border-radius:8px}
+.tabs{display:flex;gap:6px;margin-top:8px}
+.tab{flex:1;text-align:center;padding:10px;border-radius:10px;background:var(--card);border:1px solid var(--line);cursor:pointer;font-weight:600}
+.tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.tab small{display:block;font-weight:400;opacity:.85}
+main{padding:12px;max-width:860px;margin:0 auto}
+.addbar{display:flex;gap:8px;margin-bottom:10px}
+.addbar input{flex:1;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:13px 14px}
+.addbar input:focus{outline:none;border-color:var(--acc)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.chip{white-space:nowrap;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:13px;cursor:pointer;color:var(--dim)}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.chip.add{border-style:dashed}
+.group{margin:14px 0 6px;font-size:13px;color:var(--dim);font-weight:700;display:flex;gap:8px;align-items:center}
+.group::after{content:"";flex:1;height:1px;background:var(--line)}
+.item{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-right:4px solid var(--line);border-radius:var(--r);padding:11px 12px;margin-bottom:8px}
+.item.p1{border-right-color:var(--hot)} .item.p2{border-right-color:var(--warn)} .item.p3{border-right-color:var(--line)}
+.item.done{opacity:.45}
+.item.done .name{text-decoration:line-through}
+.cb{width:24px;height:24px;flex:none;border-radius:7px;border:2px solid var(--dim);background:transparent;cursor:pointer;margin-top:1px}
+.cb.on{background:var(--ok);border-color:var(--ok)}
+.body{flex:1;min-width:0}
+.name{font-weight:600;word-break:break-word}
+.meta{font-size:12px;color:var(--dim);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+.acts{display:flex;gap:4px;flex:none}
+.ico{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:8px}
+.ico:hover{background:var(--card2);color:var(--txt)}
+.empty{text-align:center;color:var(--dim);padding:40px 10px;line-height:1.7}
+.bar{position:fixed;bottom:0;right:0;left:0;background:var(--card);border-top:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+dialog{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:16px;padding:16px;width:min(560px,94vw)}
+dialog::backdrop{background:#0009}
+textarea{width:100%;min-height:220px;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:10px;font-family:ui-monospace,Consolas,monospace;font-size:13px;direction:ltr;text-align:right}
+label{font-size:13px;color:var(--dim);display:block;margin:8px 0 4px}
+select,.fld{width:100%;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px}
+.toast{position:fixed;bottom:100px;right:50%;transform:translateX(50%);background:var(--ok);color:#062;padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:99}
+.toast.on{opacity:1;bottom:112px}
+.hint{font-size:12px;color:var(--dim);line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <h1>🏠 הבית שלי</h1>
+    <button class="btn sm" id="themeBtn" title="מצב תצוגה">🌓</button>
+    <button class="btn sm" id="syncBtn">🔄 סנכרון / צ'אט</button>
+  </div>
+  <div class="tabs">
+    <div class="tab on" data-tab="shop">🛒 קניות<small id="cShop">0</small></div>
+    <div class="tab" data-tab="home">🧰 בית ומשימות<small id="cHome">0</small></div>
+  </div>
+</header>
+
+<main>
+  <div class="addbar">
+    <input id="q" placeholder="הוסף פריט… (למשל: חלב 2 סופר !)" autocomplete="off">
+    <button class="btn acc" id="addBtn">הוסף</button>
+  </div>
+  <div class="chips" id="favs"></div>
+  <div class="chips" id="filters"></div>
+  <div id="list"></div>
+</main>
+
+<div class="bar">
+  <button class="btn sm" id="doneToggle">👁 הצג שהושלמו</button>
+  <button class="btn sm" id="clearDone">🧹 נקה שהושלמו</button>
+  <button class="btn sm" id="exportBtn">⬇️ גיבוי לקובץ</button>
+  <button class="btn sm" id="importBtn">⬆️ שחזור מקובץ</button>
+  <button class="btn sm" id="lockBtn">🔒 קוד נעילה</button>
+  <input type="file" id="file" accept=".json" hidden>
+</div>
+
+<dialog id="syncDlg">
+  <div class="row"><b style="flex:1">סנכרון עם הצ'אט / מכשיר אחר</b><button class="btn sm" id="closeSync">סגור</button></div>
+  <p class="hint">העתק את הטקסט לצ'אט כדי שאעבוד עליו, או הדבק כאן טקסט שקיבלת מהצ'אט/ממכשיר אחר ולחץ "טען".</p>
+  <textarea id="snap"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button class="btn acc" id="copySnap">📋 העתק הכל</button>
+    <button class="btn" id="starterBtn">📦 טען רשימת בסיס</button>
+    <button class="btn" id="loadSnap">⬇️ טען מהטקסט (מיזוג)</button>
+    <button class="btn" id="replaceSnap">♻️ החלף הכל</button>
+  </div>
+</dialog>
+
+<dialog id="editDlg">
+  <div class="row"><b style="flex:1">עריכת פריט</b><button class="btn sm" id="closeEdit">סגור</button></div>
+  <label>שם</label><input class="fld" id="eName">
+  <label>קטגוריה / אזור</label><input class="fld" id="eCat" list="catList"><datalist id="catList"></datalist>
+  <label>הערה (כמות, חנות, פרטים)</label><input class="fld" id="eNote">
+  <label>עדיפות</label>
+  <select id="ePri"><option value="1">🔴 דחוף</option><option value="2">🟡 רגיל</option><option value="3">⚪ מתישהו</option></select>
+  <div class="row" style="margin-top:12px">
+    <button class="btn acc" id="saveEdit">שמור</button>
+    <button class="btn" id="delEdit" style="margin-inline-start:auto;color:var(--hot)">מחק פריט</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="bait_v1";
+const DEF={items:[],favs:{shop:["חלב","לחם","ביצים","ירקות","נייר טואלט","קפה"],home:["לכבס","לסדר מחסן","להזמין טכנאי"]},showDone:false,theme:"dark"};
+let S=load(), tab="shop", filter="";
+
+function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return structuredClone(DEF)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));render()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1600)}
+
+/* ---------- הוספה חכמה משורה אחת ----------
+   "חלב 2 סופר !"      -> שם + הערה + עדיפות
+   "#מטבח לתקן ברז"     -> קטגוריה מפורשת
+   "לחם, חלב, ביצים"    -> כמה פריטים בבת אחת
+--------------------------------------------*/
+const CATS={
+ shop:{"סופר":["חלב","לחם","ביצים","גבינה","יוגורט","קפה","סוכר","אורז","פסטה","שמן","קמח","עוף","בשר","דגים"],
+       "ירקות ופירות":["עגבני","מלפפון","בצל","תפוח","בננ","לימון","גזר","תפוח אדמה","סלט","ירק"],
+       "ניקיון וחד פעמי":["נייר","סבון","אקונומיקה","ספוג","שקיות","מטהר","כביסה","מרכך","חיתול"],
+       "טואלטיקה":["שמפו","משחת שיניים","דאודורנט","מברשת","קרם","גילוח"],
+       "תינוק":["חיתולים","מגבונים","מטרנה"],
+       "בית ותחזוקה":["נורה","בטרי","סוללה","דבק","ברגים","פילטר"]},
+ home:{"מטבח":["מטבח","כיור","תנור","מקרר","כלים"],
+       "סלון":["סלון","ספה","טלוויזיה"],
+       "חדר שינה":["שינה","ארון","מיטה","מזרן"],
+       "אמבטיה ושירותים":["אמבט","מקלחת","שירותים","ברז","ניאגרה"],
+       "מחסן וחצר":["מחסן","חצר","גינה","מרפסת","חניה"],
+       "תחזוקה ותיקונים":["לתקן","טכנאי","נזילה","חשמל","צבע","להרכיב","לתלות"],
+       "בירוקרטיה":["ביטוח","חשבון","לשלם","לחדש","רישיון","ארנונה","בנק"]}
+};
+function guessCat(name,t){
+  const n=name.toLowerCase();
+  for(const[c,ws]of Object.entries(CATS[t]||{})) if(ws.some(w=>n.includes(w))) return c;
+  return t==="shop"?"כללי":"כללי";
+}
+function parseLine(line,t){
+  let s=line.trim(); if(!s) return null;
+  let pri=2;
+  if(/!!/.test(s)){pri=1;s=s.replace(/!!/g,"")} else if(/!/.test(s)){pri=1;s=s.replace(/!/g,"")}
+  if(/\?/.test(s)){pri=3;s=s.replace(/\?/g,"")}
+  let cat=null; s=s.replace(/#(\S+)/,(m,c)=>{cat=c;return ""}).trim();
+  let note=""; const m=s.match(/^(.*?)[\s]*[\|\-–]\s*(.+)$/); if(m){s=m[1].trim();note=m[2].trim()}
+  const q=s.match(/\s(\d+(\.\d+)?\s*(ק"ג|קג|גרם|ליטר|יח|יחידות|חבילות)?)$/);
+  if(q&&!note){note=q[1].trim();s=s.slice(0,q.index).trim()}
+  if(!s) return null;
+  return {id:uid(),t,name:s,cat:cat||guessCat(s,t),note,pri,done:false,ts:Date.now()};
+}
+function add(text,t=tab){
+  const parts=text.split(/[,،;\n]+/).map(x=>x.trim()).filter(Boolean);
+  let n=0;
+  parts.forEach(p=>{const it=parseLine(p,t); if(it){
+     const dup=S.items.find(x=>x.t===t&&!x.done&&x.name===it.name);
+     if(dup){dup.note=it.note||dup.note;dup.pri=Math.min(dup.pri,it.pri)} else S.items.push(it); n++;
+  }});
+  if(n) {save(); toast(n===1?"נוסף ✓":`נוספו ${n} פריטים ✓`)}
+}
+
+/* ---------- תצוגה ---------- */
+function render(){
+  document.documentElement.dataset.theme=S.theme;
+  const cnt=t=>S.items.filter(i=>i.t===t&&!i.done).length;
+  cShop.textContent=cnt("shop")+" פתוחים"; cHome.textContent=cnt("home")+" פתוחים";
+  document.querySelectorAll(".tab").forEach(e=>e.classList.toggle("on",e.dataset.tab===tab));
+  doneToggle.textContent=S.showDone?"🙈 הסתר שהושלמו":"👁 הצג שהושלמו";
+
+  // מועדפים
+  favs.innerHTML="";
+  (S.favs[tab]||[]).forEach(f=>{
+    const c=document.createElement("div");c.className="chip";c.textContent="+ "+f;
+    c.onclick=()=>add(f);
+    c.oncontextmenu=e=>{e.preventDefault(); if(confirm(`להסיר "${f}" מהמהירים?`)){S.favs[tab]=S.favs[tab].filter(x=>x!==f);save()}};
+    favs.appendChild(c);
+  });
+  const a=document.createElement("div");a.className="chip add";a.textContent="⚙️ ערוך מהירים";
+  a.onclick=()=>{const v=prompt("פריטים מהירים, מופרדים בפסיק:",(S.favs[tab]||[]).join(", "));
+    if(v!==null){S.favs[tab]=v.split(",").map(x=>x.trim()).filter(Boolean);save()}};
+  favs.appendChild(a);
+
+  // פילטרים לפי קטגוריה
+  const items=S.items.filter(i=>i.t===tab&&(S.showDone||!i.done));
+  const cats=[...new Set(items.map(i=>i.cat))].sort();
+  filters.innerHTML="";
+  [["","הכל"],...cats.map(c=>[c,c])].forEach(([v,l])=>{
+    const c=document.createElement("div");c.className="chip"+(filter===v?" on":"");c.textContent=l;
+    c.onclick=()=>{filter=(filter===v?"":v);render()};filters.appendChild(c);
+  });
+  catList.innerHTML=[...new Set(S.items.filter(i=>i.t===tab).map(i=>i.cat))].map(c=>`<option value="${c}">`).join("");
+
+  // רשימה מקובצת
+  const show=items.filter(i=>!filter||i.cat===filter)
+    .sort((a,b)=>a.done-b.done||a.pri-b.pri||a.ts-b.ts);
+  list.innerHTML="";
+  if(!show.length){list.innerHTML=`<div class="empty">אין כאן כלום 🎉<br><span class="hint">הוסף פריט למעלה. טיפים: <b>!</b> = דחוף, <b>?</b> = מתישהו, <b>#קטגוריה</b>, פסיקים = כמה פריטים בבת אחת.</span></div>`;return}
+  let last=null;
+  show.forEach(i=>{
+    if(i.cat!==last){last=i.cat;const g=document.createElement("div");g.className="group";g.textContent=i.cat;list.appendChild(g)}
+    const d=document.createElement("div");d.className=`item p${i.pri}${i.done?" done":""}`;
+    d.innerHTML=`<button class="cb ${i.done?"on":""}"></button>
+      <div class="body"><div class="name">${esc(i.name)}</div>
+      <div class="meta">${i.note?"📝 "+esc(i.note):""}${i.pri==1?"<span style='color:var(--hot)'>דחוף</span>":""}</div></div>
+      <div class="acts"><button class="ico" title="ערוך">✏️</button></div>`;
+    d.querySelector(".cb").onclick=()=>{i.done=!i.done;i.ts=Date.now();save()};
+    d.querySelector(".ico").onclick=()=>openEdit(i);
+    list.appendChild(d);
+  });
+}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+/* ---------- עריכה ---------- */
+let editing=null;
+function openEdit(i){editing=i;eName.value=i.name;eCat.value=i.cat;eNote.value=i.note||"";ePri.value=i.pri;editDlg.showModal()}
+saveEdit.onclick=()=>{editing.name=eName.value.trim()||editing.name;editing.cat=eCat.value.trim()||"כללי";editing.note=eNote.value.trim();editing.pri=+ePri.value;editDlg.close();save()};
+delEdit.onclick=()=>{S.items=S.items.filter(x=>x!==editing);editDlg.close();save()};
+closeEdit.onclick=()=>editDlg.close();
+
+/* ---------- סנכרון טקסטואלי (הפורמט שהצ'אט מבין) ---------- */
+function toText(){
+  const P={1:"!",2:"",3:"?"};
+  let out="#BAIT v1 "+new Date().toLocaleString("he-IL")+"\n";
+  [["shop","קניות"],["home","בית"]].forEach(([t,label])=>{
+    const its=S.items.filter(i=>i.t===t&&!i.done);
+    out+=`\n[${label}]\n`;
+    if(!its.length) out+="(ריק)\n";
+    const by={};its.forEach(i=>(by[i.cat]=by[i.cat]||[]).push(i));
+    Object.keys(by).sort().forEach(c=>{out+=`## ${c}\n`;by[c].forEach(i=>out+=`- ${i.name}${i.note?" | "+i.note:""}${P[i.pri]}\n`)});
+  });
+  return out;
+}
+/* מנקה תווי כיווניות נסתרים, תגיות HTML, גרשיים חכמים וסימני markdown
+   שנדבקים בהעתקה מהדפדפן/צ'אט ושוברים את הזיהוי */
+function clean(l){
+  return l
+    .replace(/[\u200e\u200f\u061c\u202a-\u202e\u2066-\u2069\ufeff\u00a0]/g," ")
+    .replace(/<br\s*\/?>/gi," ")
+    .replace(/<[^>]+>/g,"")
+    .replace(/[‐‑‒—―]/g,"-")
+    .replace(/[“”„]/g,'"').replace(/[‘’]/g,"'")
+    .replace(/\s+/g," ")
+    .trim();
+}
+/* הופך כל צורת הדבקה לשורות: גם אם השורות נדרסו והכל הגיע כשורה אחת */
+function toLines(txt){
+  let s=String(txt)
+    .replace(/<br\s*\/?>/gi,"\n")
+    .replace(/<\/(p|div|li|tr)>/gi,"\n")
+    .replace(/[\u2028\u2029]/g,"\n");
+  let lines=s.split(/\r?\n/).map(clean).filter(Boolean);
+  // אם אין באמת שורות מרובות אבל יש סימני מבנה — פיצול לפי הסימנים עצמם
+  const structured=l=>/\[[^\]]{1,30}\]|##\s|\s[-•]\s/.test(l);
+  const out=[];
+  lines.forEach(l=>{
+    if(l.length>80&&structured(l)){
+      l.split(/(?=\[[^\]]{1,30}\])|(?=##\s)|(?=(?:^|\s)[-•]\s)/)
+       .map(x=>clean(x)).filter(Boolean).forEach(x=>out.push(x));
+    } else out.push(l);
+  });
+  return out;
+}
+function fromText(txt,replace){
+  const lines=toLines(txt);
+  const hasSections=lines.some(l=>/^\[.+\]$/.test(l));
+  let t=hasSections?"shop":tab, cat="כללי", n=0; const add2=[];
+  lines.forEach(l=>{
+    if(/^#BAIT/i.test(l)||l==="(ריק)"||/^`{3,}/.test(l))return;
+    const sec=l.match(/^\[(.+)\]$/);
+    if(sec){t=/קני|שופ|shop|buy/i.test(sec[1])?"shop":"home";cat="כללי";return}
+    const c=l.match(/^#{2,}\s*(.+)$/);
+    if(c){cat=c[1].trim();return}
+    let body=null;
+    const it=l.match(/^[-*•▪◦·]\s*(.+)$/);
+    if(it) body=it[1];
+    else if(!/^#/.test(l)&&!/^\[.+\]$/.test(l)) body=l;   // גם רשימה חופשית בלי מקפים
+    if(!body)return;
+    const parsed=parseLine(body,t);
+    if(parsed){if(!/#\S/.test(body))parsed.cat=cat;add2.push(parsed);n++}
+  });
+  if(!n){alert("לא זוהו פריטים.\n\nמה שהתקבל ("+lines.length+" שורות):\n"+lines.slice(0,4).join("\n")+"\n\nנסה להדביק רשימה פשוטה — שורה לכל פריט.");return}
+  if(replace) S.items=S.items.filter(i=>i.done);
+  add2.forEach(p=>{if(!S.items.find(x=>x.t===p.t&&!x.done&&x.name===p.name))S.items.push(p)});
+  save();toast(`נטענו ${n} פריטים ✓`);
+}
+syncBtn.onclick=()=>{snap.value=toText();syncDlg.showModal()};
+closeSync.onclick=()=>syncDlg.close();
+copySnap.onclick=async()=>{try{await navigator.clipboard.writeText(snap.value)}catch(e){snap.select();document.execCommand("copy")}toast("הועתק ✓")};
+loadSnap.onclick=()=>{fromText(snap.value,false);syncDlg.close()};
+replaceSnap.onclick=()=>{if(confirm("להחליף את כל הפריטים הפתוחים?")){fromText(snap.value,true);syncDlg.close()}};
+
+/* ---------- רשימת בסיס מובנית ---------- */
+const STARTER=`[קניות]
+## ריהוט בסיסי
+- מיטה ומזרן | מזרן איכותי חשוב
+- ארון בגדים
+- שידת לילה
+- ספה
+- שולחן אוכל וכיסאות
+- שולחן קפה
+- כוננית אחסון
+- מתלה מעילים לכניסה
+- כיסא עבודה | תמיכה לגב
+## מטבח וציוד
+- מקרר
+- תנור ומיקרוגל
+- מכונת כביסה
+- קומקום וטוסטר
+- סט סירים ומחבתות
+- סכינים ומשטח חיתוך
+- כלי אוכל וכוסות
+- מיכלי אחסון למזון
+- פח מטבח
+## טקסטיל ובית
+- מצעים וכריות
+- שמיכות לחורף
+- מגבות
+- וילונות או תריסים
+- שטיח לסלון
+- שטיחוני אמבטיה
+## תאורה וחשמל
+- מנורות תקרה
+- מנורת קריאה
+- מפצלים ומאריכים
+- נורות רזרבה
+- מאוורר או מפזר חום
+## כלי עבודה ותחזוקה
+- ארגז כלים בסיסי | פטיש, מברגים, מפתח שוודי
+- מברגה חשמלית
+- סרגל מטר ופלס
+- דיודים וברגים
+- סולם מתקפל
+- פנס חירום
+- סרט בידוד ודבק
+- סיליקון אטימה
+- צבע לתיקוני קיר
+## חירום ובטיחות
+- ערכת עזרה ראשונה !
+- מטף כיבוי אש !
+- גלאי עשן !
+- מים ומזון לחירום
+- מטען נייד לטלפון
+## מתכלים קבועים
+- נורות
+- סוללות
+- פילטרים למזגן
+- שקיות אשפה
+- נייר טואלט ומגבות נייר
+- חומרי ניקוי
+- כפפות עבודה
+[בית]
+## שוטף יומי
+- לפנות את הכיור | לפני השינה
+- לסדר משטחי מטבח
+- לפנות אשפה
+- סידור מהיר 10 דקות
+## שבועי
+- שטיפת רצפות
+- שאיבת אבק ושטיחים
+- ניקוי אמבטיה ושירותים
+- החלפת מצעים
+- כביסה וקיפול
+- ניקוי מקרר משאריות
+- מעבר על מלאי הבית | מה נגמר
+## חודשי
+- ניקוי מסנן מכונת כביסה
+- ניקוי מסנני מזגן
+- ניקוי תנור ומיקרוגל
+- ניקוי חלונות ותריסים
+- בדיקת נזילות מתחת לכיורים
+- ניקוי מחסן ומרפסת
+- בדיקת גלאי עשן
+- גיבוי מסמכים וקבלות
+## עונתי ורבעוני
+- טיפול מזגן לפני קיץ !
+- בדיקת איטום לפני חורף !
+- ניקוי מרזבים וניקוזים
+- החלפת ארון בגדים לעונה
+- בדיקת דוד שמש
+- ריסוס נגד מזיקים
+- ניקוי יסודי של ספה ושטיחים
+## שנתי
+- בדיקת חשמל ולוח חשמל ?
+- שטיפת בוילר
+- תיקוני צבע וסדקים ?
+- מיון וזריקה של ציוד ישן
+- בדיקת מטף כיבוי
+## בירוקרטיה ותשלומים
+- חידוש ביטוח דירה !
+- השוואת ספק חשמל
+- בדיקת ארנונה והנחות
+- תיוק חשבוניות ואחריות
+- עדכון רשימת מספרי טכנאים`;
+starterBtn.onclick=()=>{if(confirm("להוסיף את רשימת הבסיס לבית? (פריטים קיימים יישמרו)")){fromText(STARTER,false);syncDlg.close()}};
+
+/* ---------- גיבוי קובץ ---------- */
+exportBtn.onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="bait-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()};
+importBtn.onclick=()=>file.click();
+file.onchange=e=>{const r=new FileReader();r.onload=()=>{try{S=Object.assign({},DEF,JSON.parse(r.result));save();toast("שוחזר ✓")}catch(x){alert("קובץ לא תקין")}};r.readAsText(e.target.files[0])};
+
+/* ---------- נעילת קוד אופציונלית (הגנה מקומית מהצצה במכשיר) ---------- */
+async function hash(s){
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("bait|"+s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+async function gate(){
+  if(!S.pin) return;
+  document.body.style.visibility="hidden";
+  for(let i=0;i<5;i++){
+    const v=prompt("קוד כניסה:");
+    if(v===null){document.body.innerHTML="<div class='empty'>נדרש קוד כניסה. רענן את הדף.</div>";document.body.style.visibility="visible";return}
+    if(await hash(v)===S.pin){document.body.style.visibility="visible";return}
+  }
+  document.body.innerHTML="<div class='empty'>יותר מדי ניסיונות. רענן את הדף.</div>";
+  document.body.style.visibility="visible";
+}
+lockBtn.onclick=async()=>{
+  if(S.pin){ if(confirm("להסיר את קוד הנעילה?")){delete S.pin;save();toast("הנעילה הוסרה")} return }
+  const v=prompt("בחר קוד נעילה (מספרים או טקסט):");
+  if(v){S.pin=await hash(v);save();toast("קוד נקבע ✓")}
+};
+
+/* ---------- Service Worker לעבודה אופליין ---------- */
+if("serviceWorker" in navigator&&location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+
+/* ---------- אירועים ---------- */
+document.querySelectorAll(".tab").forEach(e=>e.onclick=()=>{tab=e.dataset.tab;filter="";render();q.focus()});
+addBtn.onclick=()=>{add(q.value);q.value=""};
+q.addEventListener("keydown",e=>{if(e.key==="Enter"){add(q.value);q.value=""}});
+doneToggle.onclick=()=>{S.showDone=!S.showDone;save()};
+clearDone.onclick=()=>{if(confirm("למחוק את כל מה שהושלם?")){S.items=S.items.filter(i=>!i.done);save()}};
+themeBtn.onclick=()=>{S.theme=S.theme==="dark"?"light":"dark";save()};
+render();
+gate();
+</script>
+</body>
+</html>
