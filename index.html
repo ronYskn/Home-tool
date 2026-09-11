@@ -251,11 +251,11 @@ function toText(){
   const P={1:"!",2:"",3:"?"};
   let out="#BAIT v1 "+new Date().toLocaleString("he-IL")+"\n";
   [["shop","קניות"],["home","בית"]].forEach(([t,label])=>{
-    const its=S.items.filter(i=>i.t===t&&!i.done);
+    const its=S.items.filter(i=>i.t===t);
     out+=`\n[${label}]\n`;
     if(!its.length) out+="(ריק)\n";
     const by={};its.forEach(i=>(by[i.cat]=by[i.cat]||[]).push(i));
-    Object.keys(by).sort().forEach(c=>{out+=`## ${c}\n`;by[c].forEach(i=>out+=`- ${i.name}${i.note?" | "+i.note:""}${P[i.pri]}\n`)});
+    Object.keys(by).sort().forEach(c=>{out+=`## ${c}\n`;by[c].forEach(i=>out+=`- [${i.done?"x":" "}] ${i.name}${i.note?" | "+i.note:""}${P[i.pri]}\n`)});
   });
   return out;
 }
@@ -304,12 +304,22 @@ function fromText(txt,replace){
     if(it) body=it[1];
     else if(!/^#/.test(l)&&!/^\[.+\]$/.test(l)) body=l;   // גם רשימה חופשית בלי מקפים
     if(!body)return;
+    // קליטת סטטוס: תיבת סימון [x]/[ ] או סימן ✓ בתחילת השורה
+    let done=false;
+    const dm=body.match(/^\[\s*([xX✓vV])?\s*\]\s*/);
+    if(dm){done=!!dm[1];body=body.slice(dm[0].length).trim()}
+    else{const cm=body.match(/^[✓✔☑]\s+/);if(cm){done=true;body=body.slice(cm[0].length).trim()}}
+    if(!body)return;
     const parsed=parseLine(body,t);
-    if(parsed){if(!/#\S/.test(body))parsed.cat=cat;add2.push(parsed);n++}
+    if(parsed){if(!/#\S/.test(body))parsed.cat=cat;parsed.done=done;add2.push(parsed);n++}
   });
   if(!n){alert("לא זוהו פריטים.\n\nמה שהתקבל ("+lines.length+" שורות):\n"+lines.slice(0,4).join("\n")+"\n\nנסה להדביק רשימה פשוטה — שורה לכל פריט.");return}
-  if(replace) S.items=S.items.filter(i=>i.done);
-  add2.forEach(p=>{if(!S.items.find(x=>x.t===p.t&&!x.done&&x.name===p.name))S.items.push(p)});
+  if(replace) S.items=[];
+  add2.forEach(p=>{
+    const ex=S.items.find(x=>x.t===p.t&&x.name===p.name);
+    if(ex){ex.done=p.done;ex.note=p.note||ex.note;ex.pri=Math.min(ex.pri,p.pri);ex.ts=Date.now()}
+    else S.items.push(p);
+  });
   save();toast(`נטענו ${n} פריטים ✓`);
 }
 syncBtn.onclick=()=>{snap.value=toText();syncDlg.showModal()};
